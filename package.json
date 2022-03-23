@@ -1,0 +1,28 @@
+{
+  "name": "api-mocker",
+  "version": "1.0.0",
+  "description": "The api mock middleware that allows to serve local files as responses to intercepted api calls",
+  "main": "index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Liksu/api-mocker.git"
+  },
+  "keywords": [
+    "api",
+    "mock",
+    "bypass",
+    "webpack",
+    "angular",
+    "devserver",
+    "dev-server",
+    "middleware"
+  ],
+  "author": "Petro Borshchahivskyi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Liksu/api-mocker/issues"
+  },
+  "homepage": "https://github.com/Liksu/api-mocker#readme"
+}

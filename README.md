@@ -1,4 +1,4 @@
-# api-mocker
+# api-mid-mock
 The api mock middleware that allows to serve local files as responses to intercepted api calls.
 Ideally feats to webpack-dev-server like Angular [proxy server](https://angular.io/guide/build#proxying-to-a-backend-server).
 
@@ -11,7 +11,7 @@ Ideally feats to webpack-dev-server like Angular [proxy server](https://angular.
 # Installation
 
 ```shell
-npm install api-mocker --save-dev
+npm install api-mid-mock --save-dev
 ```
 
 # Bypass function
@@ -35,7 +35,7 @@ Put your JSON files in folder, for example `./mocks`:
 
 And add proxy configuration `proxy.config.js` (for Angular application):
 ```javascript
-const APIMocker = require('api-mocker')
+const APIMocker = require('api-mid-mock')
 
 module.exports = [{
     context: () => true,
@@ -126,7 +126,3 @@ If you need to pass the request to back-end just return `null` or `undefined` fr
 But there is one difference with webpack-dev-server bypass function.
 You cannot return the path to the file to return it as response.
 Please, use `require` or other ways to get the response content and return the content.
-
----
-
-Please, check the [api-mocker-middleware](https://www.npmjs.com/package/api-mocker-middleware) if you are using the Express server.

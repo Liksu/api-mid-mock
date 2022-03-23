@@ -1,5 +1,5 @@
 {
-  "name": "api-mocker",
+  "name": "api-mid-mock",
   "version": "1.0.0",
   "description": "The api mock middleware that allows to serve local files as responses to intercepted api calls",
   "main": "index.js",
@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Liksu/api-mocker.git"
+    "url": "git+https://github.com/Liksu/api-mid-mock.git"
   },
   "keywords": [
     "api",
@@ -22,7 +22,7 @@
   "author": "Petro Borshchahivskyi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Liksu/api-mocker/issues"
+    "url": "https://github.com/Liksu/api-mid-mock/issues"
   },
-  "homepage": "https://github.com/Liksu/api-mocker#readme"
+  "homepage": "https://github.com/Liksu/api-mid-mock#readme"
 }

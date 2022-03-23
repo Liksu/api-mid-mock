@@ -20,8 +20,8 @@ function parseString(template) {
     }
 
     template = template
-        .replaceAll(/\*/g, '.*?')
-        .replaceAll(/:(\w+)/g, '(?<$1>[^/]*)')
+        .replace(/\*/g, '.*?')
+        .replace(/:(\w+)/g, '(?<$1>[^/]*)')
         .replace(/^\//, '/?')
     mask.urlRe = new RegExp(`^${template}$`)
 
@@ -80,7 +80,7 @@ function loadConfig({config, configPath, mockRoot, useFiles}) {
         getFiles(mockRoot)
             .filter(path => path !== configPath)
             .forEach(path => {
-                const url = path.replace(mockRoot, '').replace(/\.\w+$/, '').replaceAll('\\', '/')
+                const url = path.replace(mockRoot, '').replace(/\.\w+$/, '').replace(/\\/g, '/')
                 const method = url.split('/').pop().match(methodsRe)?.[1].toUpperCase() ?? null
                 const mask = {
                     ...parseString(url),

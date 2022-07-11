@@ -22,6 +22,7 @@ There is object with two parameters, that you can pass to :
 
 * `path` - specifies path to config file or all mocks root folder, by default `./mocks`
 * `useFiles` - boolean flag that allows adding the mock files to configuration, by default `false`
+* `acceptOnlyJSON` - boolean flag to skip loading route from browser application by checking Accept header, by default `true`
 
 # Files based usage
 

@@ -92,7 +92,7 @@ function loadConfig({config, configPath, mockRoot, useFiles}) {
     }
 }
 
-module.exports = function APIMocker({path = './mocks', useFiles = false}) {
+module.exports = function APIMocker({ path = './mocks', useFiles = false, acceptOnlyJSON = true }) {
     const config = new Map()
 
     // resolve path
@@ -114,6 +114,11 @@ module.exports = function APIMocker({path = './mocks', useFiles = false}) {
 
     // the bypass function for proxy
     return function mocker(req, res, next) {
+        const isAcceptsJSON = req.accepts().includes('application/json')
+        if (acceptOnlyJSON && !isAcceptsJSON) {
+            return req.url
+        }
+
         const {method, query, path} = req
 
         const match = Array.from(config.keys())

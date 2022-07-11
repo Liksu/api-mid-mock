@@ -1,6 +1,6 @@
 {
   "name": "api-mid-mock",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "The api mock middleware that allows to serve local files as responses to intercepted api calls",
   "main": "index.js",
   "scripts": {

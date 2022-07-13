@@ -127,3 +127,36 @@ If you need to pass the request to back-end just return `null` or `undefined` fr
 But there is one difference with webpack-dev-server bypass function.
 You cannot return the path to the file to return it as response.
 Please, use `require` or other ways to get the response content and return the content.
+
+# Node.js example
+
+You can run server with mock data without webpack, with node.js only.
+
+Here is the example of `server.js` file:
+```javascript
+const http = require('http')
+const url = require('url')
+const APIMock = require('api-mid-mock')
+
+const mocked = APIMock({ path: './index.js', acceptOnlyJSON: false })
+
+const requestListener = function (req, res) {
+    const parsedUrl = url.parse(req.url, true)
+    req.accepts = () => req.headers.accept.split(',').map((s) => s.replace(/;.+$/, ''))
+    req.path = parsedUrl.path.replace(parsedUrl.search, '')
+    req.query = parsedUrl.query
+    req.params = {}
+
+    const result = mocked(req, res, () => {})
+
+    if (!result) {
+        res.writeHead(400)
+        res.end('Please, try supported requests')
+    }
+}
+
+const server = http.createServer(requestListener)
+server.listen(80)
+```
+
+To start the server just run `node server.js`.

@@ -18,11 +18,12 @@ npm install api-mid-mock --save-dev
 
 Call `APIMocker()` function to get the pre-configured bypass function.
 
-There is object with two parameters, that you can pass to :
+There is object with four parameters, that you can pass to:
 
 * `path` - specifies path to config file or all mocks root folder, by default `./mocks`
 * `useFiles` - boolean flag that allows adding the mock files to configuration, by default `false`
 * `acceptOnlyJSON` - boolean flag to skip loading route from browser application by checking Accept header, by default `true`
+* `watch` - boolean flag to run `fs.watch` to hot module replacement (can be helpful on systems where `fs.watch` is broken), by default `true`
 
 # Files based usage
 
@@ -116,7 +117,7 @@ There are three types of responses: strings, objects and function.
 
 The strings will be returned as is.
 
-The objects will be translated to string and returned with the `Content-type: application/json` header.
+The objects will be translated to string by `JSON.stringify` and returned with the `Content-type: application/json` header.
 
 #### The functions
 
@@ -127,6 +128,8 @@ If you need to pass the request to back-end just return `null` or `undefined` fr
 But there is one difference with webpack-dev-server bypass function.
 You cannot return the path to the file to return it as response.
 Please, use `require` or other ways to get the response content and return the content.
+
+To end the request without body, return `true` from function. 
 
 # Node.js example
 
@@ -141,18 +144,18 @@ const APIMock = require('api-mid-mock')
 const mocked = APIMock({ path: './index.js', acceptOnlyJSON: false })
 
 const requestListener = function (req, res) {
+    req.accepts = () => req.headers.accept?.split(',').map((s) => s.replace(/;.+$/, '')) || []
     const parsedUrl = url.parse(req.url, true)
-    req.accepts = () => req.headers.accept.split(',').map((s) => s.replace(/;.+$/, ''))
     req.path = parsedUrl.path.replace(parsedUrl.search, '')
     req.query = parsedUrl.query
     req.params = {}
 
-    const result = mocked(req, res, () => {})
-
-    if (!result) {
-        res.writeHead(400)
-        res.end('Please, try supported requests')
-    }
+    mocked(req, res, () => {}).then((result) => {
+        if (!result) {
+            res.writeHead(400)
+            res.end('Please, try supported requests')
+        }
+    })
 }
 
 const server = http.createServer(requestListener)
@@ -160,3 +163,26 @@ server.listen(80)
 ```
 
 To start the server just run `node server.js`.
+
+The small helper to get the request body:
+```javascript
+function body(req) {
+    return new Promise((resolve) => {
+        let body = ''
+        req.on('data', (chunk) => {
+            body += chunk.toString()
+        })
+        req.on('end', () => {
+            try {
+                body = JSON.parse(body)
+            } catch {}
+            resolve(body)
+        })
+    })
+}
+```
+
+use it with `await`:
+```javascript
+const data = await body(req)
+```

@@ -1,4 +1,4 @@
-const pathModule = require('path');
+const pathModule = require('path')
 const fs = require('fs')
 
 function parseString(template) {
@@ -60,6 +60,7 @@ function loadConfig({config, configPath, mockRoot, useFiles}) {
     try {
         initialConfig = require(configPath)
     } catch (e) {
+        console.error(e)
     }
 
     if (!initialConfig || typeof initialConfig !== 'object') {
@@ -92,7 +93,7 @@ function loadConfig({config, configPath, mockRoot, useFiles}) {
     }
 }
 
-module.exports = function APIMocker({ path = './mocks', useFiles = false, acceptOnlyJSON = true }) {
+module.exports = function APIMocker({path = './mocks', useFiles = false, acceptOnlyJSON = true, watch = true}) {
     const config = new Map()
 
     // resolve path
@@ -107,13 +108,15 @@ module.exports = function APIMocker({ path = './mocks', useFiles = false, accept
     loadConfig(loaderParams)
 
     // start watch
-    fs.watch(mockRoot, {recursive: true}, () => {
-        config.clear()
-        loadConfig(loaderParams)
-    })
+    if (watch) {
+        fs.watch(mockRoot, {recursive: true}, () => {
+            config.clear()
+            loadConfig(loaderParams)
+        })
+    }
 
     // the bypass function for proxy
-    return function mocker(req, res, next) {
+    return async function mocker(req, res, next) {
         const isAcceptsJSON = req.accepts().includes('application/json')
         if (acceptOnlyJSON && !isAcceptsJSON) {
             return req.url
@@ -141,6 +144,7 @@ module.exports = function APIMocker({ path = './mocks', useFiles = false, accept
         if (match) {
             let response = config.get(match)
             if (typeof response === 'function') response = response(req, res, next)
+            if (response instanceof Promise) response = await response
             if (!response) return response
 
             if (typeof response === 'object') {
@@ -148,7 +152,9 @@ module.exports = function APIMocker({ path = './mocks', useFiles = false, accept
                 response = JSON.stringify(response)
             }
 
-            res.end(response)
+            if (response === true) res.end()
+            else res.end(response)
+
             return true
         }
     }

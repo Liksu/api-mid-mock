@@ -23,7 +23,7 @@ There is object with four parameters, that you can pass to:
 * `path` - specifies path to config file or all mocks root folder, by default `./mocks`
 * `useFiles` - boolean flag that allows adding the mock files to configuration, by default `false`
 * `acceptOnlyJSON` - boolean flag to skip loading route from browser application by checking Accept header, by default `true`
-* `watch` - boolean flag to run `fs.watch` to hot module replacement (can be helpful on systems where `fs.watch` is broken), by default `true`
+* `watch` - boolean flag to disable the `fs.watch` that implements the hot mocks replacement (can be helpful on systems where `fs.watch` is broken), by default `true`
 
 # Files based usage
 
@@ -130,6 +130,25 @@ You cannot return the path to the file to return it as response.
 Please, use `require` or other ways to get the response content and return the content.
 
 To end the request without body, return `true` from function. 
+
+# Chokidar usage
+
+Because of `fs.watch` is broken on some systems, you can use `chokidar` to watch files changes.
+
+Here is the example how to wrap `APIMocker` with `chokidar` in `webpack.config.js`:
+
+```javascript
+let mocker = () => {}
+chokidar.watch('./mocks').on('all', () => {
+    mocker = APIMocker({path: './mocks', watch: false})
+})
+
+module.exports = [{
+    context: () => true,
+    target: 'https://your.domain',
+    bypass: (req, res, next) => mocker(req, res, next),
+}]
+```
 
 # Node.js example
 
